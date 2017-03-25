@@ -118,4 +118,8 @@ defmodule Couchdb.Connector.UrlHelper do
   def security_url db_props do
     "#{database_url(db_props)}/_security"
   end
+
+  def db_query_url(db_props, :find, db_query_params) do
+    "#{database_url(db_props)}/_find"
+  end
 end

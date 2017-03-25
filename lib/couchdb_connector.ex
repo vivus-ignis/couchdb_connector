@@ -134,4 +134,16 @@ defmodule Couchdb.Connector do
     :: {:ok, map} | {:error, map}
   def document_by_key(db_props, view_key, :ok),
     do: View.do_document_by_key(db_props, view_key, :ok) |> as_map
+
+  @doc """
+  Mango query language
+  """
+  @spec find(Types.db_properties, map) :: {:ok, map} | {:error, map}
+  def find(db_props, find_params) do
+    case find_params do
+      %{selector: _} -> Reader.db_query(db_props, :find, as_json(find_params))
+      _ -> {:error, %{}}
+    end
+  end
+  
 end

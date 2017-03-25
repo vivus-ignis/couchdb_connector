@@ -23,7 +23,8 @@ defmodule Couchdb.Connector.Reader do
   alias Couchdb.Connector.Types
   alias Couchdb.Connector.UrlHelper
   alias Couchdb.Connector.ResponseHandler, as: Handler
-
+  alias Couchdb.Connector.Headers
+  
   @doc """
   Retrieve the document given by database properties and id.
   """
@@ -49,5 +50,23 @@ defmodule Couchdb.Connector.Reader do
     url
     |> HTTPoison.get!
     |> Handler.handle_get
+  end
+
+  @spec db_query(Types.db_properties, atom, map) :: {:ok, map} | {:error, map}
+  def db_query(db_props, db_query_command, db_query_params) do
+    case db_query_command do
+      :find ->
+        db_props
+        |> UrlHelper.db_query_url(db_query_command, db_query_params)
+        |> do_db_query(:post, db_query_params)
+        _ -> {:error, %{}}
+    end
+  end
+
+  def do_db_query(url, :post, db_query_params) do
+    IO.puts(db_query_params)
+    url
+    |> HTTPoison.post!(db_query_params, [Headers.json_header])
+    |> Handler.handle_post
   end
 end
